@@ -1,19 +1,3 @@
-const https = require('https');
-
-export function getRequest(link) {
-    https.get(link, (res) => {
-        let data = "";
-        res.on('data', (chunk) => {
-            data += chunk;
-        })
-        res.on('end', () => {
-            return JSON.parse(data.explanation);
-        });
-    }).on('error', (err) => {
-        console.log(`Error: ${err.message}`)
-    })
-}
-
 export async function get (url, token) {
     return new Promise((resolve, reject) => {
       let xhr = new window.XMLHttpRequest()
