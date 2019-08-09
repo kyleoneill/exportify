@@ -5,12 +5,14 @@ import {
 import logo from "./logo.svg";
 import "./App.css";
 import {spotifyClientId} from "./auth.json";
-import {getRequest} from "./helperfunctions";
-import {get} from "./helperfunctions";
+import {getPlaylists} from "./helperfunctions";
 import {
   Alerts,
   Button
 } from 'reactstrap';
+import ReactTable from 'react-table';
+import 'react-table/react-table.css'
+import {filterPlaylist} from './helperfunctions';
 
 export const authEndpoint = 'https://accounts.spotify.com/authorize';
 
@@ -33,23 +35,41 @@ const hash = window.location.hash // Get the hash of the url
       initial[parts[0]] = decodeURIComponent(parts[1]);
     }
     return initial;
-  }, {});window.location.hash = "";
+}, {});window.location.hash = "";
+
+const width = 500;
+const columns = [{
+    Header: 'Playlist Name',
+    accessor: 'playlistName',
+    headerStyle: { whiteSpace: 'unset' },
+    style: {whitespace: 'unset'},
+    maxWidth: width
+  },
+  {
+    Header: 'Playlist Length',
+    accessor: 'playlistLength',
+    headerStyle: { whiteSpace: 'unset' },
+    style: {whitespace: 'unset'},
+    maxWidth: width
+  },
+  {
+    Header: 'Link',
+    accessor: 'link',
+    headerStyle: { whiteSpace: 'unset' },
+    style: {whitespace: 'unset'},
+    maxWidth: width
+  }
+]
 
 class App extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
         token: null,
-        spotifyUser: null
+        playlists: null
       }
     }
-    async handleAccountButton(token) {
-      var link = "https://api.spotify.com/v1/me";
-      var res = await get(link, token);
-      this.setState(() => {
-        return {spotifyUser: res}
-      })
-    }
+
     componentDidMount() {
       // Set token
       let _token = hash.access_token;
@@ -59,29 +79,56 @@ class App extends React.Component {
           token: _token
         });
       }
+      this.handlePlaylistButton = this.handlePlaylistButton.bind(this);
     }
+
+    async handlePlaylistButton() {
+      var res = await getPlaylists(this.state.token);
+      //Filter playlist data before running setstate
+      var filteredList = filterPlaylist(res);
+      this.setState(() => {
+        return {playlists: filteredList}
+      })
+    }
+
     render() {
       return (
         <div className="App">
           <header className="App-header">
-          {!this.state.token && (
-            <div>
-              <img src={logo} className="App-logo" alt="logo" />
-              <Button 
-                color="primary" 
-                size="lg"  
-                href={`${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join("%20")}&response_type=token&show_dialog=true`} >
-                  Login
-              </Button>
-            </div>
-          )}
-          {this.state.token && (
-            <div>
-              <Text>Hey look we're authenticated!</Text>
-              <Button color="primary" onClick={() =>{this.handleAccountButton(this.state.token)}}>Click Me</Button>
-            </div>
-          )}
+            Exportify
           </header>
+          <div className="App-body">
+            {!this.state.token && (
+              <div className="Login-screen">
+                <img src={logo} className="App-logo" alt="logo" />
+                <Button 
+                  color="primary" 
+                  size="lg"
+                  href={`${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join("%20")}&response_type=token&show_dialog=true`} >
+                    Login
+                </Button>
+              </div>
+            )}
+            {this.state.token && (
+              <div>
+                <div>
+                  <Button color="primary" onClick={this.handlePlaylistButton}>Get playlists</Button>{" "}
+                  <Button color="primary" onClick={console.log("hello")}>Foo</Button>
+                </div>
+                {this.state.playlists && (
+                  <ReactTable
+                    data={this.state.playlists}
+                    columns={columns}
+                    manual
+                    minRows={20}
+                    pageSize={1}
+                    pages={0}
+                    showPagination={true}
+                  />
+                )}
+              </div>
+            )}
+          </div>
         </div>
       );
     }
