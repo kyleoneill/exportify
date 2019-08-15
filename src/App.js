@@ -43,8 +43,7 @@ class App extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
-        //token: null,
-        token: "BQCF6SfwcAKFrJiuz2n_F9xyeutPOGsSJ-IkI7VKahR0MJTYYb_gkpPh8neEauFSsQxdNDDW-qYombvfTfSZHBGcK8jmSodlR9LY2IZbY6B8v2TnpE0DRnj4Fl2me1H3b0O0oHQHU32m0-KtmwpwbgqMz33BiQBOgAoUqPXn2zGzuusyf-U__g",
+        token: null,
         playlists: null,
         filteredPlaylists: null,
         isTableLoading: false,
@@ -115,9 +114,9 @@ class App extends React.Component {
         await sleep(100);
         var playlist = this.state.playlists[i];
         var res = await getTracks(this.state.token, playlist.tracks.href, playlist.tracks.total)
-        //Create a csv for the playlist
+        //TODO Create a csv for the playlist
       }
-      //create a zip of csv files
+      //TODO create a zip of csv files
       await this.setState({isGettingTracks: false})
     }
 
