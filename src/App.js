@@ -115,7 +115,9 @@ class App extends React.Component {
         await sleep(100);
         var playlist = this.state.playlists[i];
         var res = await getTracks(this.state.token, playlist.tracks.href, playlist.tracks.total)
+        //Create a csv for the playlist
       }
+      //create a zip of csv files
       await this.setState({isGettingTracks: false})
     }
 
