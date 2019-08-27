@@ -1,15 +1,14 @@
 import React from "react";
-import logo from "./logo.svg";
-import "./App.css";
+import logo from "../logo.svg";
 import {spotifyClientId} from "../auth.json";
 import {
   Button
 } from 'reactstrap';
 import 'react-table/react-table.css'
+import Export from './export';
 
-export const authEndpoint = 'https://accounts.spotify.com/authorize';
+const authEndpoint = 'https://accounts.spotify.com/authorize';
 
-const clientId = spotifyClientId;
 const redirectUri = "http://localhost:3000/";
 const scopes = [
   "user-read-currently-playing",
@@ -18,7 +17,6 @@ const scopes = [
   "playlist-read-private",
   "user-read-private"
 ];
-import Export from './export';
 
 const hash = window.location.hash
   .substring(1)
@@ -35,7 +33,7 @@ class Main extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-          token: null,
+          token: null
         }
     }
 
@@ -63,7 +61,7 @@ class Main extends React.Component {
                   <Button 
                     color="primary" 
                     size="lg"
-                    href={`${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join("%20")}&response_type=token&show_dialog=true`} >
+                    href={`${authEndpoint}?client_id=${spotifyClientId}&redirect_uri=${redirectUri}&scope=${scopes.join("%20")}&response_type=token&show_dialog=true`} >
                       Login
                   </Button>
                 </div>

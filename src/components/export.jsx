@@ -1,5 +1,4 @@
 import React from "react";
-import "./App.css";
 import {getPlaylists} from "../util/helperfunctions";
 import {getTracks} from "../util/helperfunctions";
 import {sleep} from "../util/helperfunctions";
@@ -21,40 +20,46 @@ class Export extends React.Component{
           filteredPlaylists: null,
           isTableLoading: false,
           isGettingTracks: false,
+          col: [],
+          tracks: null
         }
     }
 
-    columns = (playlist = null) => {
+    componentDidMount() {
+        this.setState({col: this.columns()})
+    }
+
+    columns = () => {
         const width = 500;
         return [
             {
-            Header: 'Playlist Name',
-            accessor: 'playlistName',
-            headerStyle: { whiteSpace: 'unset' },
-            style: {whitespace: 'unset'},
-            maxWidth: width
+                Header: 'Playlist Name',
+                accessor: 'playlistName',
+                headerStyle: { whiteSpace: 'unset' },
+                style: {whitespace: 'unset'},
+                maxWidth: width
             },
             {
-            Header: 'Playlist Length',
-            accessor: 'playlistLength',
-            headerStyle: { whiteSpace: 'unset' },
-            style: {whitespace: 'unset'},
-            maxWidth: width
+                Header: 'Playlist Length',
+                accessor: 'playlistLength',
+                headerStyle: { whiteSpace: 'unset' },
+                style: {whitespace: 'unset'},
+                maxWidth: width
             },
             {
-            Header: 'Link',
-            accessor: 'link',
-            headerStyle: { whiteSpace: 'unset' },
-            style: {whitespace: 'unset'},
-            maxWidth: width
+                Header: 'Link',
+                accessor: 'link',
+                headerStyle: { whiteSpace: 'unset' },
+                style: {whitespace: 'unset'},
+                maxWidth: width
             },
             {
-            Header: 'Download',
-            accessor: 'download',
-            headerStyle: { whiteSpace: 'unset' },
-            style: {whitespace: 'unset'},
-            maxWidth: width,
-            Cell: <Button color="primary">Download Playlist</Button>
+                Header: 'Download',
+                accessor: 'download',
+                headerStyle: { whiteSpace: 'unset' },
+                style: {whitespace: 'unset'},
+                maxWidth: width,
+                Cell: <Button color="primary">Download Playlist</Button>
             }
         ]
     }
@@ -87,21 +92,22 @@ class Export extends React.Component{
                 <Alert color="info" isOpen={this.state.isGettingTracks}>Getting tracks, please wait</Alert>
                 <div>
                     <Button color="primary" disabled={this.state.isGettingTracks} onClick={this.handleGetPlaylists}>Get playlists</Button>{" "}
-                    <Button color="primary" disabled={this.state.isGettingTracks} onClick={this.handleDownloadAllButton}>Download All</Button>
+                    <Button color="primary" disabled={this.state.isGettingTracks || !this.state.playlists} onClick={this.handleDownloadAllButton}>Download All</Button>
                 </div>
+                <br/>
                 {this.state.col && (
-                <ReactTable
-                    loadingText="Fetching data from Spotify"
-                    loading={this.state.isTableLoading}
-                    NoDataComponent={() => null}
-                    data={this.state.filteredPlaylists || []}
-                    columns={this.columns}
-                    manual
-                    minRows={20}
-                    pageSize={1}
-                    pages={0}
-                    showPagination={true}
-                />
+                    <ReactTable
+                        loadingText="Fetching data from Spotify"
+                        loading={this.state.isTableLoading}
+                        NoDataComponent={() => null}
+                        data={this.state.filteredPlaylists || []}
+                        columns={this.state.col}
+                        manual
+                        minRows={20}
+                        pageSize={1}
+                        pages={0}
+                        showPagination={true}
+                    />
                 )}
             </div>
         )
