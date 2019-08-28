@@ -21,7 +21,7 @@ class Export extends React.Component{
           isTableLoading: false,
           isGettingTracks: false,
           col: [],
-          tracks: null
+          trackfulPlaylists: null
         }
     }
 
@@ -53,14 +53,15 @@ class Export extends React.Component{
                 style: {whitespace: 'unset'},
                 maxWidth: width
             },
-            {
-                Header: 'Download',
-                accessor: 'download',
-                headerStyle: { whiteSpace: 'unset' },
-                style: {whitespace: 'unset'},
-                maxWidth: width,
-                Cell: <Button color="primary">Download Playlist</Button>
-            }
+            //TODO: implement this
+            // {
+            //     Header: 'Download',
+            //     accessor: 'download',
+            //     headerStyle: { whiteSpace: 'unset' },
+            //     style: {whitespace: 'unset'},
+            //     maxWidth: width,
+            //     Cell: <Button color="primary">Download Playlist</Button>
+            // }
         ]
     }
   
@@ -76,14 +77,30 @@ class Export extends React.Component{
     handleDownloadAllButton = async () => {
         //TODO: this takes a long time, add a loading bar / status indicator
         await this.setState({isGettingTracks: true})
+        var trackfulPlaylists = []
         for(var i = 0; i < this.state.playlists.length; i++) {
+            var trackfulPlaylist = new Object();
             await sleep(100);
             var playlist = this.state.playlists[i];
-            var res = await getTracks(this.props.token, playlist.tracks.href, playlist.tracks.total)
+            var res = await getTracks(this.props.token, playlist.tracks.href, playlist.tracks.total);
+            trackfulPlaylist.name = playlist.name;
+            trackfulPlaylist.songs = res.slice(0);
+            trackfulPlaylists.push(trackfulPlaylist);
             //TODO Create a csv for the playlist
         }
         //TODO create a zip of csv files
-        await this.setState({isGettingTracks: false})
+        await this.setState({isGettingTracks: false, trackfulPlaylists: trackfulPlaylists})
+    }
+
+    debug = () => {
+        var debugObj = [];
+        for(var i = 0; i < 10; i++) {
+            var temp = new Object();
+            temp.name = `Object ${i}`;
+            temp.songs = [`song ${i}`, `song ${i+1}`, `song ${i+2}`];
+            debugObj.push(temp)
+        }
+        console.log(debugObj)
     }
 
     render() {
@@ -93,6 +110,7 @@ class Export extends React.Component{
                 <div>
                     <Button color="primary" disabled={this.state.isGettingTracks} onClick={this.handleGetPlaylists}>Get playlists</Button>{" "}
                     <Button color="primary" disabled={this.state.isGettingTracks || !this.state.playlists} onClick={this.handleDownloadAllButton}>Download All</Button>
+                    <Button color="primary" onClick={this.debug}>Debug</Button>
                 </div>
                 <br/>
                 {this.state.col && (
