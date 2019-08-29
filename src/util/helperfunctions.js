@@ -1,3 +1,7 @@
+const JSZip = require('jszip');
+const FileSaver = require('file-saver');
+const ObjectsToCsv = require('objects-to-csv');
+
 export async function get (url, token) {
   return new Promise((resolve, reject) => {
     let xhr = new window.XMLHttpRequest()
@@ -88,4 +92,14 @@ export function filterPlaylist(playlists) {
     return newList;
   })
   return newList;
+}
+
+export function DownloadObjectAsCSV(obj, fileName, zipName) {
+  const csv = new ObjectsToCsv(obj);
+  const csvStr = csv.toString();
+  var zip = new JSZip();
+  zip.file(fileName, csvStr);
+  zip.generateAsync({type:"blob"}).then( content => {
+      FileSaver.saveAs(content, zipName);
+  });
 }
